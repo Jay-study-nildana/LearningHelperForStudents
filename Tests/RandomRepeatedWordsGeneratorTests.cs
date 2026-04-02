@@ -4,6 +4,7 @@ using System.Linq;
 using Xunit;
 using Jay.LearningHelperForStudents.Interfaces;
 using Jay.LearningHelperForStudents.Data;
+using Jay.LearningHelperForStudents.Utilities;
 
 namespace Jay.LearningHelperForStudents.Tests
 {
@@ -12,7 +13,7 @@ namespace Jay.LearningHelperForStudents.Tests
         [Fact]
         public void ImplementsInterface()
         {
-            IRandomRepeatedWordsGenerator gen = new RandomRepeatedWordsGenerator();
+            IRandomRepeatedWordsGenerator gen = new Lh();
             Assert.NotNull(gen);
         }
 
@@ -20,7 +21,7 @@ namespace Jay.LearningHelperForStudents.Tests
         public void Generate_Returns_Correct_Count_When_MinEqualsMax()
         {
             var rng = new Random(42);
-            IRandomRepeatedWordsGenerator gen = new RandomRepeatedWordsGenerator();
+            IRandomRepeatedWordsGenerator gen = new Lh();
 
             int n = 3;
             int repeat = 2;
@@ -35,7 +36,7 @@ namespace Jay.LearningHelperForStudents.Tests
         public void Generate_AllowsSelectionDuplicates_When_True()
         {
             var rng = new Random(123);
-            IRandomRepeatedWordsGenerator gen = new RandomRepeatedWordsGenerator();
+            IRandomRepeatedWordsGenerator gen = new Lh();
 
             int n = 50;
             var result = gen.GenerateRandomRepeatedWords(SourceWords.List, n, 1, 1, rng, allowSelectionDuplicates: true, shuffleResult: false);
@@ -49,13 +50,13 @@ namespace Jay.LearningHelperForStudents.Tests
         public void Generate_ShuffleResult_False_Produces_ContiguousBlocks()
         {
             var rng = new Random(7);
-            IRandomRepeatedWordsGenerator gen = new RandomRepeatedWordsGenerator();
+            IRandomRepeatedWordsGenerator gen = new Lh();
 
             int n = 10;
             int min = 1;
             int max = 4;
             // Use a source with unique words so that when sampling without replacement
-            // each distinct word appears at most once in the selection — this ensures
+            // each distinct word appears at most once in the selection ï¿½ this ensures
             // contiguous blocks in the output when shuffleResult is false.
             var uniqueSource = SourceWords.List.Distinct().ToList();
             var result = gen.GenerateRandomRepeatedWords(uniqueSource, n, min, max, rng, allowSelectionDuplicates: false, shuffleResult: false);
@@ -81,7 +82,7 @@ namespace Jay.LearningHelperForStudents.Tests
         [Fact]
         public void Generate_Throws_On_Invalid_Arguments()
         {
-            IRandomRepeatedWordsGenerator gen = new RandomRepeatedWordsGenerator();
+            IRandomRepeatedWordsGenerator gen = new Lh();
 
             // empty source
             Assert.Throws<ArgumentException>(() => gen.GenerateRandomRepeatedWords(new List<string>(), 1, 1, 1));
@@ -103,7 +104,7 @@ namespace Jay.LearningHelperForStudents.Tests
         public void Repeats_Are_Within_Specified_Range()
         {
             var rng = new Random(999);
-            IRandomRepeatedWordsGenerator gen = new RandomRepeatedWordsGenerator();
+            IRandomRepeatedWordsGenerator gen = new Lh();
 
             int n = 20;
             int min = 2;

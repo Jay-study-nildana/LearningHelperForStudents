@@ -2,9 +2,7 @@
 
 A simple nuget package to share with my students.
 
-## Current facilities in this package
-
-1. A simple word counting project. 
+Note: check README.MD of the nuget package class library folder, 'LearningHelperStudents' for a more detailed README, Change Log.
 
 ## book a session with me
 

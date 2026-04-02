@@ -1,12 +1,14 @@
-﻿using Jay.LearningHelperForStudents.Interfaces;
+using Jay.LearningHelperForStudents.Interfaces;
+using Jay.LearningHelperForStudents.Data;
 
-namespace Jay.LearningHelperForStudents
+namespace Jay.LearningHelperForStudents.Utilities
 {
     /// <summary>
-    /// Implementation of <see cref="Interfaces.IRandomRepeatedWordsGenerator"/> which
-    /// selects words from a provided source and repeats them a random number of times.
+    /// A utility class that provides helper methods for learning and educational purposes,
+    /// including word generation, user input, and console display functionality.
+    /// this is the entry point for each and every utility class in this project. It implements multiple interfaces to provide a wide range of functionalities.
     /// </summary>
-    public class RandomRepeatedWordsGenerator : IRandomRepeatedWordsGenerator
+    public class Lh : IAddSimpleConsoleDividerDash, IDisplayListOfStrings,IDisplayWordsListWithJoin,IGiveMeStringInput,IRandomRepeatedWordsGenerator
     {
         /// <summary>
         /// Generate a list of words by selecting <paramref name="n"/> words from
@@ -88,5 +90,75 @@ namespace Jay.LearningHelperForStudents
 
             return outputlistofwords;
         }
+
+        /// <summary>
+        /// Prompts the user for input and returns the entered string.
+        /// </summary>
+        /// <param name="prompt">The message to display to the user when asking for input.</param>
+        /// <returns>The string input provided by the user.</returns>
+        public string GetStringInput(string? prompt = "Enter the expected string input: ")
+        {
+            if (!string.IsNullOrEmpty(prompt))
+            {
+                Console.Write(prompt);
+            }
+
+            var input = Console.ReadLine() ?? string.Empty;
+
+            return input;
+        }
+
+        /// <summary>
+        /// Displays the list of words as a single string, with an optional join string between each word.
+        /// </summary>
+        /// <param name="words">The list of words to display.</param>
+        /// <param name="joinString">The string to insert between each word. If null or empty, words will be concatenated without any separator.</param>
+        /// <returns>A single string representing the joined list of words.</returns>
+        public string DisplayWordsList(IList<string> words, string? joinString = " ")
+        {
+            if (words == null)
+                throw new ArgumentNullException(nameof(words), "Words list cannot be null.");
+
+            // If joinString is null or empty, concatenate without any separator
+            if (string.IsNullOrEmpty(joinString))
+                return string.Concat(words);
+
+            var joinedstring = string.Join(joinString, words);
+
+            Console.WriteLine(joinedstring);
+            
+            return joinedstring;
+        }
+
+        /// <summary>
+        /// Displays a list of strings to the console.
+        /// </summary>
+        /// <param name="strings">The list of strings to display.</param>
+        /// <param name="prefix">An optional prefix to display before the list.</param>
+        /// <exception cref="ArgumentNullException">Thrown when strings is null.</exception>
+        public void DisplayListOfStringsNow(IList<string> strings, string? prefix = null)
+        {
+            if (strings == null) throw new ArgumentNullException(nameof(strings));
+            if (!string.IsNullOrEmpty(prefix))
+            {
+                Console.WriteLine(prefix);
+            }   
+
+            foreach (var item in strings)
+            {
+                Console.WriteLine(item);
+            }
+        }           
+
+        /// <summary>
+        /// Adds a simple console divider consisting of dashes.
+        /// </summary>
+        /// <param name="length">The length of the divider in characters. Default is 50.</param>
+        public void AddSimpleConsoleDivider(int? length = 10)
+        {
+            int dividerLength = length ?? 10;
+            Console.WriteLine(new string('-', dividerLength));
+        }     
+
     }
 }
