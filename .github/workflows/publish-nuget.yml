@@ -55,8 +55,16 @@ jobs:
       # -----------------------------------------------------------------
       # `dotnet restore` downloads any package dependencies required by the
       # project before building. This keeps the build deterministic.
-      - name: Restore
+      - name: Restore LearningHelperForStudents Project
         run: dotnet restore LearningHelperForStudents/LearningHelperForStudents.csproj
+
+      # -----------------------------------------------------------------
+      # 3.4) Build and Restore the test project
+      # -----------------------------------------------------------------
+      # in the next step i am running the tests. I need to prepare the test project first.
+
+      - name: Restore Test Project
+        run: dotnet restore Tests/Tests.csproj
 
       # -----------------------------------------------------------------
       # 3.5) Run tests
