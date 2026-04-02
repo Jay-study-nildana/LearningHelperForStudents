@@ -1,0 +1,139 @@
+name: Publish NuGet package
+
+# ---------------------------------------------------------------------------
+# Workflow triggers
+# ---------------------------------------------------------------------------
+# - This workflow will run automatically when:
+#   * code is pushed to the `main` branch (common for CI on the mainline),
+#   * a Git tag that matches `v*` is pushed (common pattern for releases, e.g. `v1.0.1`).
+# - It can also be started manually via the GitHub UI because of `workflow_dispatch`.
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  # Allows manual run from the Actions tab in GitHub
+  workflow_dispatch:
+
+# ---------------------------------------------------------------------------
+# Jobs
+# ---------------------------------------------------------------------------
+# A job is a set of steps that run on the same virtual machine (runner).
+# This workflow contains a single job named `publish` which performs all
+# steps needed to produce and optionally push a NuGet package.
+jobs:
+  publish:
+    # Use the latest available Ubuntu runner. This provides a reproducible
+    # Linux environment with tools we need (dotnet SDK, bash, tar/unzip, etc.).
+    runs-on: ubuntu-latest
+
+    steps:
+      # -----------------------------------------------------------------
+      # 1) Checkout the repository
+      # -----------------------------------------------------------------
+      # The `actions/checkout` action fetches a copy of the repository so
+      # subsequent steps can access the source files. By default it checks
+      # out the commit that triggered the workflow (or the selected tag).
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------
+      # 2) Setup .NET SDK
+      # -----------------------------------------------------------------
+      # installs the requested .NET SDK version (8.x here) on the runner,
+      # so `dotnet` commands (restore/build/pack/push) will be available.
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          # We request the major/minor used by the project. Using '8.0.x'
+          # ensures the runner gets a compatible SDK for net8.0 projects.
+          dotnet-version: '8.0.x'
+
+      # -----------------------------------------------------------------
+      # 3) Restore NuGet packages
+      # -----------------------------------------------------------------
+      # `dotnet restore` downloads any package dependencies required by the
+      # project before building. This keeps the build deterministic.
+      - name: Restore
+        run: dotnet restore LearningHelperForStudents/LearningHelperForStudents.csproj
+
+      # -----------------------------------------------------------------
+      # 3.5) Run tests
+      # -----------------------------------------------------------------
+      # Execute the test suite before proceeding with packaging. Running
+      # tests early prevents creating a package from a broken build.
+      #
+      # We call `dotnet test` on the test project. The `--no-restore` flag
+      # is used because we've already restored packages above. `dotnet test`
+      # will build the test project (and referenced projects) as needed.
+      - name: Test
+        run: dotnet test Tests/Tests.csproj -c Release --no-restore --verbosity normal
+
+      # -----------------------------------------------------------------
+      # 4) Build the project in Release configuration
+      # -----------------------------------------------------------------
+      # We build the project in `Release` configuration to produce optimized
+      # assemblies suitable for packaging. `--no-restore` is used because
+      # we already ran `dotnet restore` explicitly above.
+      - name: Build
+        run: dotnet build LearningHelperForStudents/LearningHelperForStudents.csproj -c Release --no-restore
+
+      # -----------------------------------------------------------------
+      # 5) Pack the project into a .nupkg
+      # -----------------------------------------------------------------
+      # `dotnet pack` creates the NuGet package (.nupkg) from the project
+      # metadata in the .csproj (PackageId, Version, files to include, etc.).
+      # The output folder is `./nupkgs` so we can find the package files
+      # easily in later steps. `--no-build` is used because we've already
+      # built the project in the previous step.
+      - name: Pack
+        run: dotnet pack LearningHelperForStudents/LearningHelperForStudents.csproj -c Release -o ./nupkgs --no-build
+
+      # -----------------------------------------------------------------
+      # 6) Inspect produced packages (helpful for debugging)
+      # -----------------------------------------------------------------
+      # This step lists files in the `./nupkgs` folder. It helps students
+      # verify a .nupkg was produced and see its name. It will not fail
+      # the workflow if the folder is missing (`|| true`).
+      - name: List produced packages
+        run: ls -la ./nupkgs || true
+
+      # -----------------------------------------------------------------
+      # 7) Push package(s) to nuget.org (optional; controlled by secret)
+      # -----------------------------------------------------------------
+      # Security note: publishing to nuget.org requires an API key which is
+      # stored in the repository's secrets (`NUGET_API_KEY`). This secret is
+      # not visible to logs (GitHub masks the value) and is the recommended
+      # method to provide credentials to workflows.
+      #
+      # The script below checks that `NUGET_API_KEY` is set; if it is not set
+      # the step exits cleanly (so student runs won't accidentally push).
+      # If the key is present, it iterates through any .nupkg files in the
+      # output folder and pushes them with `dotnet nuget push`.
+      - name: Push package to nuget.org
+        env:
+          # This reads the secret named `NUGET_API_KEY` from the repository
+          # settings (Repository -> Settings -> Secrets and variables).
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          # If the secret is empty or not provided we do not attempt to push
+          # to nuget.org. This prevents accidental publishes from student
+          # test runs.
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "NUGET_API_KEY is not set. Skipping push.";
+            exit 0;
+          fi
+
+          # Loop over all .nupkg files in the packaging output. There may be
+          # multiple packages if the solution packs several projects.
+          for pkg in ./nupkgs/*.nupkg; do
+            # Informational output - shows which package is being pushed.
+            echo "Pushing $pkg to nuget.org"
+
+            # `--skip-duplicate` tells nuget to not fail if the exact
+            # package version already exists on nuget.org. This is useful
+            # when re-running the workflow against the same package.
+            dotnet nuget push "$pkg" -k "$NUGET_API_KEY" -s https://api.nuget.org/v3/index.json --skip-duplicate
+          done
+

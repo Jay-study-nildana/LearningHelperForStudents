@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+	<!-- Build a package when you build in Release; useful for CI and local testing -->
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+	<!-- NuGet metadata -->
+	<PackageId>Jay.LearningHelperForStudents</PackageId>
+	<Version>1.0.1</Version>
+	<Authors>Jay-study-nildana</Authors>
+	<Company>Jay-study-nildana</Company>
+	<Description>Learning Helper for my students</Description>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<RepositoryUrl>https://github.com/Jay-study-nildana/LearningHelperForStudents</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+
+	<!-- Symbols & documentation -->
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>true</Pack>
+	  <PackagePath>\</PackagePath>
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+
+</Project>
