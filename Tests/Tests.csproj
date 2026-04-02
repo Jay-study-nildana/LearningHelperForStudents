@@ -5,6 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
+    <Version>1.0.4</Version>
+    <Authors>Jay-study-nildana</Authors>
+    <Company>Jay-study-nildana</Company>
+    <Description>Learning Helper for my students</Description>
+
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
