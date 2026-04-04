@@ -3,6 +3,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.7] - 2026-04-04
+
+### Added
+
+- Added DC Comics data. 
+	- This is similar to the SQL Query Practice Sample, https://github.com/Jay-study-nildana/Azure-CSharp-Corp-Trainer-Syllabus/tree/main/SQLFundamentals/DCComics
+	- The idea is for my students to practice SQL. Then, they can come here, and practice the same with LINQ, but without having to worry about a DB.
+	- Later when they move to a real database which has the DC Comics data, it will be easier to run LINQ queries
+	- Essentially, this is like an inmemory DB for practising linq
+	- There is the original class (which can be used as a model for EF if need be)
+	- Then, collections with data. The data respects the foreign key relations
+	- Further students can make side by side comparisons between how the queries would look in SQL and in LINQ as the table and columns names math.
+	- However, the data might be slightly different because, I was unable to map the actual data between the SQL file and the local collection. 
+
 ## [1.0.5] - 2026-04-04
 
 ### Added
