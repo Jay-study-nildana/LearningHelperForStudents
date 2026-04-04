@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 
 - Upgraded the nuget package so that it will support .Net 9.X
 - Upgraded the nuget package so that it will support .Net 10.X
+- Upgraded the test proejct also to support .Net 9.X
+- Upgraded the test proejct also to support .Net 10.X
 
 ## [1.0.4] - 2026-04-02
 
