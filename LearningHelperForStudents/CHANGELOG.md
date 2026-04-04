@@ -3,6 +3,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.5] - 2026-04-04
+
+### Added
+
+- Upgraded the nuget package so that it will support .Net 9.X
+- Upgraded the nuget package so that it will support .Net 10.X
+
 ## [1.0.4] - 2026-04-02
 
 ### Added
